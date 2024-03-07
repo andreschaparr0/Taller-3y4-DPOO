@@ -1,6 +1,7 @@
 package uniandes.dpoo.aerolinea.modelo.cliente;
 
 import org.json.JSONObject;
+import java.util.Random;
 
 /**
  * Esta clase se usa para representar a los clientes de la aerolínea que son empresas
@@ -8,7 +9,7 @@ import org.json.JSONObject;
 public class ClienteCorporativo extends Cliente
 {
     // TODO completar
-	public static final String CORPORATIVO = "Natural";
+	public static final String CORPORATIVO = "Corporativo";
 	
 	public static final int GRANDE = 1;
 	
@@ -44,14 +45,22 @@ public class ClienteCorporativo extends Cliente
 
 	@Override
 	public String getTipoCliente() {
-		// TODO Auto-generated method stub
-		return null;
+		if(tamanoEmpresa == GRANDE) {
+			return "Grande";
+		}
+		else if(tamanoEmpresa == MEDIANA) {
+			return "Mediana";
+		}
+		else if(tamanoEmpresa == PEQUEÑA) {
+			return "Pequeña";
+		}
+		return "Tipo de empresa desconocido";
 	}
 
 	@Override
 	public String getItentificador() {
-		// TODO Auto-generated method stub
-		return null;
+		Random rand = new Random();
+		return String.valueOf(rand.nextInt(1000));
 	}
 	
     public static ClienteCorporativo cargarDesdeJSON( JSONObject cliente )

@@ -1,6 +1,10 @@
 package uniandes.dpoo.aerolinea.modelo;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -96,7 +100,7 @@ public class Aerolinea
      */
     public void agregarCliente( Cliente cliente )
     {
-        this.clientes.put( cliente.getIdentificador( ), cliente );
+        this.clientes.put( cliente.getItentificador( ), cliente );
     }
 
     /**
@@ -189,7 +193,7 @@ public class Aerolinea
     {
     	Collection<Tiquete> tiquetesAerolinea = new ArrayList<Tiquete>();
     	for (Vuelo vuelo: vuelos) {
-    	    Collection<Tiquete> tiquetesVuelo =  vuelo.getTiquetes().values();
+    	    Collection<Tiquete> tiquetesVuelo =  vuelo.getTiquete().values();
     	    tiquetesAerolinea.addAll(tiquetesVuelo);
     	}
     	return tiquetesAerolinea;
@@ -309,8 +313,35 @@ public class Aerolinea
      */
     public int venderTiquetes( String identificadorCliente, String fecha, String codigoRuta, int cantidad ) throws VueloSobrevendidoException, Exception
     {
-        // TODO Implementar el método
-        return -1;
+        // Verifica si hay un vuelo para la ruta y fecha deseada.
+        Vuelo vueloSeleccionado = null;
+        boolean vueloEncontrado = false; // Variable para verificar si se encontró un vuelo válido
+        for (Vuelo vuelo : vuelos) {
+            if (vuelo.getRuta().getCodigoRuta().equals(codigoRuta) && vuelo.getFecha().equals(fecha)) {
+                vueloSeleccionado = vuelo;
+                vueloEncontrado = true; 
+                break; 
+            }
+        }
+
+        if (!vueloEncontrado) {
+            throw new Exception("No hay vuelos disponibles");
+        }
+        int capacidadDisponible = vueloSeleccionado.getAvion().getCapacidad() - vueloSeleccionado.getTiquete().size();
+        if (cantidad > capacidadDisponible) {
+            throw new VueloSobrevendidoException(vueloSeleccionado);
+        }
+        
+        //verifica si es temporada baja
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaFormat = formato.parse(fecha);
+        boolean temporadaBaja = (fechaFormat >= 5 && fechaFormat <= 9);
+        //Calcula la tarifa.
+        CalculadoraTarifas calcualdora = temporadaBaja ? new CalculadoraTarifasTemporadaBaja() : new CalculadoraTarifasTemporadaAlta(); 
+        Cliente cliente = clientes.get(identificadorCliente);
+        int tarifaTotal = vueloSeleccionado.venderTicketes(cliente, calcualdora, cantidad);
+        
+        return tarifaTotal; 
     }
 
     /**
@@ -320,7 +351,13 @@ public class Aerolinea
      */
     public void registrarVueloRealizado( String fecha, String codigoRuta )
     {
-        // TODO Implementar el método
+    	int i = 0;
+    	for (Vuelo vuelo : vuelos) {
+    	if(fecha.contains(vuelo.getFecha()) & codigoRuta.contains(vuelo.getRuta().getCodigoRuta())) {
+    		vuelos.remove(i);
+    		}
+    	i++;
+    	}
     }
 
     /**
@@ -328,10 +365,17 @@ public class Aerolinea
      * @param identificadorCliente El identificador del cliente
      * @return La suma de lo que pagó el cliente por los tiquetes sin usar
      */
-    public String consultarSaldoPendienteCliente( String identificadorCliente )
-    {
-        // TODO Implementar el método
-        return "";
+    public int consultarSaldoPendienteCliente( String identificadorCliente )
+    {	
+    	int tarifa = 0;
+    	for (String identificador : clientes.keySet()) {
+    		if(identificadorCliente.contains(identificadorCliente)) {
+    			Cliente cliente = clientes.get(identificador);
+    			tarifa = cliente.calcularValorTotalTiquetes();
+    		}
+    	}
+    	
+        return tarifa;
     }
 
 }

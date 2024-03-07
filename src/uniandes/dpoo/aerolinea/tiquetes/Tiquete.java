@@ -15,7 +15,7 @@ public class Tiquete {
 	
 	private Cliente cliente;
 	
-	public Tiquetes(String codigo, Vuelo vuelo, Cliente clienteComprador, int tarifa) {
+	public Tiquete(String codigo, Vuelo vuelo, Cliente clienteComprador, int tarifa) {
 		
 		this.codigo = codigo;
 		this.vuelo = vuelo;
@@ -24,27 +24,27 @@ public class Tiquete {
 				
 	}
 
-	private String getCodigo() {
+	public String getCodigo() {
 		return codigo;
 	}
 
-	private int getTarifa() {
+	public int getTarifa() {
 		return tarifa;
 	}
 
-	private boolean esUsado() {
+	public boolean esUsado() {
 		return usado;
 	}
 
-	private Vuelo getVuelo() {
+	public Vuelo getVuelo() {
 		return vuelo;
 	}
 
-	private Cliente getCliente() {
+	public Cliente getCliente() {
 		return cliente;
 	}
 	
-	private void marcarComoUsado() {
+	public void marcarComoUsado() {
 		usado = false;
 	}
 }

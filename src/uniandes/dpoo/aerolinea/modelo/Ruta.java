@@ -41,7 +41,7 @@ public class Ruta
     	return horaSalida;
     }
     
-    public String getHoraLleString() {
+    public String getHoraLlegada() {
     	return horaLlegada;
     }
     

@@ -3,6 +3,8 @@ package uniandes.dpoo.aerolinea.modelo;
 import java.util.HashMap;
 import java.util.Map;
 
+import uniandes.dpoo.aerolinea.exceptions.VueloSobrevendidoException;
+import uniandes.dpoo.aerolinea.modelo.cliente.Cliente;
 import uniandes.dpoo.aerolinea.modelo.tarifas.CalculadoraTarifas;
 import uniandes.dpoo.aerolinea.tiquetes.Tiquete;
 
@@ -40,12 +42,31 @@ public class Vuelo {
 		return tiquete;
 	}
 	
-	public int venderTiquete(Cliente cliente, CalculadoraTarifas calculadora, int cantidad) {
-		return -1;
+	public int venderTiquete(Cliente cliente, CalculadoraTarifas calculadora, int cantidad)throws VueloSobrevendidoException {
+		
+		int precioTiquete = 0; 
+		
+        if (avion.getCapacidad() < tiquete.size()+cantidad) {
+            throw new VueloSobrevendidoException(this);
+        }
+        else {
+        	precioTiquete = calculadora.calcularTarifa(this, cliente);
+        }
+        int precioTotal = precioTiquete*cantidad;
+		return precioTotal;
 	}
 	
+
 	public boolean equals(Object obj) {
-		return false;
+	    // Verificar si el objeto es una instancia de Vuelo
+	    if (obj instanceof Vuelo) {
+	        Vuelo otroVuelo = (Vuelo) obj; // Realizar un casting del objeto a Vuelo
+
+	        // Comparar los atributos relevantes para determinar si los vuelos son iguales
+	        return this.fecha.equals(otroVuelo.getFecha()) && this.avion.equals(otroVuelo.getAvion()) && this.ruta.equals(otroVuelo.getRuta());
+	    }
+	    return false; // Si el objeto no es una instancia de Vuelo, no son iguales
 	}
+
 	
 }
